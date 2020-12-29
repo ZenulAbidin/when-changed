@@ -46,6 +46,7 @@ FILE can be a directory. Use %f to pass the filename to the command.
 - -1 Don't re-run command if files changed while command was running
 - -s Run command immediately at start
 - -q Run command quietly
+- -d Run as daemon
 
 ### Environment variables:
 

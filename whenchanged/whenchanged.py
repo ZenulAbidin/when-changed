@@ -13,6 +13,7 @@ Options:
 -1 Don't re-run command if files changed while command was running
 -s Run command immediately at start
 -q Run command quietly
+-d Run as daemon
 
 Environment variables:
 - WHEN_CHANGED_EVENT: reflects the current event type that occurs.
@@ -33,6 +34,7 @@ import time
 from datetime import datetime
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+import daemon
 try:
     import subprocess32 as subprocess
 except ImportError:
@@ -190,6 +192,7 @@ def main():
     run_once = False
     run_at_start = False
     quiet_mode = False
+    daemon_mode = False
 
     while args and args[0][0] == '-':
         flag = args.pop(0)
@@ -210,6 +213,8 @@ def main():
             args = []
         elif flag == '-q':
             quiet_mode = True
+        elif flag == '-d':
+            daemon_mode = True
         else:
             break
 
@@ -241,7 +246,11 @@ def main():
                      verbose_mode, quiet_mode)
 
     try:
-        wc.run()
+        if daemon_mode:
+            with daemon.DaemonContext():
+                wc.run()
+        else:
+            wc.run()
     except KeyboardInterrupt:
         print('^C')
         exit(0)
